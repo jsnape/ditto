@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataCheck>
+  <Connection Name="dittoedw"
+          Provider="System.Data.SqlClient"
+          ConnectionString="Data Source=dittoedwdb-uk\ditto;Initial Catalog=DittoEdw;Integrated Security=SSPI;" />
+
+  <Owner Name="clientfirst">
+    <Contact Notify="True">global.cib.cl1st.support@ditto.com</Contact>
+  </Owner>
+
+  <Feature Name="Client Metrics" Connection="dittoedw" Owner="clientfirst">
+    <Entity Name="entity.Contact">
+      <NotNull Field="MarketingClientKey" Severity="Error"/>
+      <NotNull Field="ContactId" Severity="Error"/>
+      <NotNull Field="FirstName"/>
+      <NotNull Field="LastName"/>
+      
+      <Unique Field="ContactId"/>
+      <Unique Field="CorporateEmailAddress"/>
+      
+      <Match Field="CorporateEmailAddress" Expression="^.+@[\w\.-]*\.[\w]*$" Options="IgnoreCase"/>
+      
+      <Check Name="Contacts should not be inferred">
+        <![CDATA[
+        select
+          100 * sum(case when IsInferred = 1 then 1 else 0 end)
+          /
+          count(*)
+        from entity.Contact
+        ]]>
+      </Check>
+    </Entity>
+    
+    <Entity Name="dw.FactMeetingClientAttendeesInferred">
+    <Empty />
+    </Entity>
+  </Feature>
+
+</DataCheck>

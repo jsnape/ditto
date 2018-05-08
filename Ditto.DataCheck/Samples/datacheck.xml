@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataCheck>
+  <Connection Name="dittoedw"
+            Provider="System.Data.SqlClient"
+            ConnectionString="Data Source=dittoedwdb-uk\ditto;Initial Catalog=DittoEdw;Integrated Security=SSPI;" />
+
+  <Connection Name="apollo"
+            Provider="System.Data.SqlClient"
+            ConnectionString="Data Source=GCLSQL019SLS.gaia.net.intra,1590\SLSFRPI1;Initial Catalog=EQDSpyBo;User Id=SpyBoRO;Password=P0mm3dapi!;">
+    <Connection Environment="Production"
+                ConnectionString="Data Source=GCLSQL019SLS.gaia.net.intra,1590\SLSFRPI1;Initial Catalog=EQDSpyBo;User Id=SpyBoRO;Password=P0mm3dapi!;"/>
+  </Connection>
+  
+  <Owner Name="starbond">
+    <Contact>deal.support@ditto.com</Contact>
+  </Owner>
+
+  <Owner Name="crds">
+    <Contact Notify="True">global.support@ditto.com</Contact>
+  </Owner>
+
+  <Owner Name="platocdg">
+    <Contact Notify="True">supportplato@ditto.com</Contact>
+  </Owner>
+
+  <Owner Name="scan">
+    <Contact>scan.support@uk.ditto.com</Contact>
+  </Owner>
+
+  <Feature Name="Bonds" Enabled="False">
+    <Entity Connection="dittoedw" Name="dw.FactBondDealHistory" Owner="starbond">
+      <!-- Simple check for null values. -->
+      <NotNull Field="NominalAmount"/>
+      <NotNull Field="IssuerKey"/>
+
+      <!-- Simple check that the combination of fields should be unique. -->
+      <Unique Fields="ContractNumber,ReportingCurrencyKey" />
+
+      <!-- Not sure how to implement the dynamic max value but it might be very useful. -->
+      <Range Field="TradeDateKey" Min="20060101" Max="$(TodayDateKey)" />
+
+      <!-- 
+        Foreign key check. Note the database has all the metadata 
+        needed already for the check so no need to repeat here.
+        However, what about checks where there is no FK?
+        Should we force devs to create one or allow alternate definitions.
+        -->
+      <ForeignKey Name="fk_dw_FactBondDealHistory_Issuer" Owner="crds" />
+    </Entity>
+  </Feature>
+  
+  <Entity Connection="dittoedw" Name="dw.FactRevenueHistory" Owner="platocdg">
+    <!-- Reverse FK check - for the times when every single parent should have at least one child record. -->
+    <MissingDetail Name="fk_dw_FactRevenueHistory_Portfolio" />
+  </Entity>
+
+  <Entity Connection="dittoedw" Name="entity.Employee" Owner="crds">
+    <NotNull Field="EmployeeName"/>
+    <Unique Field="GlobalUID">
+      <Filter><![CDATA[GlobalUID <> N'None']]></Filter>
+    </Unique>
+    <Length Field="EmployeeCode" Min="4" Max="4" />
+
+    <!-- Regex match on the field where GlobalUID <> None -->
+    <Match Field="EmailAddress" Expression="^.+@[\w\.-]*\.[\w]*$" Options="IgnoreCase">
+      <Filter><![CDATA[GlobalUID <> N'None']]></Filter>
+    </Match>
+    
+  </Entity>
+
+  <Entity Connection="dittoedw" Name="entity.Team" Owner="scan">
+    <!-- 
+    This checks the hierarchy is valid and that no child has multiple parents.
+    Note that it needs to check the keys since the member names can be duplicates.
+    -->
+    <Hierarchy Name="SalesTeamHierarchy" Fields="Level00Code,Level01Code,Level02Code,Level03Code,Level04Code,Level05Code,Level06Code,Level07Code,Level08Code,Level09Code,Level10Code,Level11Code,TeamCode" />
+  </Entity>
+
+  <!-- 
+  Shortcut to save repeating the same checks for every entity.
+  This would use the SQL server metadata to generate a number of checks.
+  -->
+  <Entity Connection="dittoedw" Match="dw[\.].*">
+    <!--NotNull Match=".*Key"/-->
+    <Domain Field="ReportingCurrencyKey" Values="-1,1,2,3,4" />
+  </Entity>
+
+  <Feature Name="Start of Day Checks">
+    <!-- The two checks below are variations on the start of day checks. -->
+    <Check Connection="dittoedw" Name="AllExchangeRatesAreOfficial" Goal="1">
+      <!-- Returns the percentage of records with an unofficial rate. Target is very small. -->
+      <![CDATA[
+      select
+        100 * sum(case when IsOfficialRate = 0 then 1 else 0 end)
+        /
+        count(*)
+      from ref.CurrencyExchangeRate with (nolock)
+      where ExchangeRateDate >= datefromparts(year(getdate()), 1, 1)
+      and ToCurrencyIsoCode <> N'SRC'
+      ]]>
+    </Check>
+
+    <Check Connection="dittoedw" Name="CC Not Assigned to Null Sales Teams" Goal="0">
+      <!-- Returns the amount of cc attributed to null sales teams - should be zero. -->
+      <![CDATA[
+        select cast(isnull(sum(Amount), 0) as int)
+        from cube.FactClientContributionEUR with (nolock)
+        where SalesTeamKey is null
+      ]]>
+    </Check>
+
+    <ParallelCheck Connection="dittoedw" Name="Apollo CC should match source">
+      <Expected Connection="apollo">
+        <![CDATA[
+        ;with
+        ClientContribution as (
+            select
+                a.Activity as SalesBusinessLine,
+                e.Name as SalesEntity,
+                ga.Name as SalesPlatform,
+                dc.Name as SalesLocation,
+                sg.Name as SalesGroup,
+                su.FullName as SalesFullName,
+	        --	su.UID_id as SalesGlobalUserId,
+                tbl1.Name as BookBusinessLine,
+                case when cc.Trading_Book_Id = 0 then tg.Activity else tb.Activity end as Activity,
+                tbl.Name as DealBusinessLine,
+                case when cc.Trading_Book_Id = 0 then ts2.Name else ts1.Name end as Strategy,
+                case when cc.Trading_Book_Id = 0 then tg.Sub_Strategy else tb.Sub_Strategy end as Substrategy,
+                tb.Name as TradingBook,
+                bl.Name as TradingSite,
+                case when cc.Trading_Book_Id = 0 then tg.Desk else tb.Desk end as Desk,
+                tg.Name as TradingGroup,
+          
+                pd.Name as ProductDetail,
+                pf.Name as ProductFamily,
+          
+                mc.Crm_Row_Id as MarketingClientId,
+                mc.Marketing_Client_Name as MarketingClientName,
+                mc.Marketing_Client_Country as MarketingClientCountry,
+                mc.Marketing_Group as MarketingClientMarketingGroup,
+                mc.Marketing_Client_Type as MarketingClientSector,
+          
+                cp.RMPM_Code as RmpmCode,
+                cp.RMPM_Group_Name as RmpmGroupName,
+                cp.CRDS_Code as CrdsCode,
+          
+                (cc.CC1_Eur) as Cc1DealsDoneEur,
+                (cc.CC1_Add_On_Eur) as Cc1AddOnEur,
+                (cc.CC1_At_Risk_Eur) as Cc1AtRiskEur,
+          
+                convert(date, cast(cc.Revenue_Date_Id as char(10)), 112) as RevenueDate,
+                isnull(convert(smalldatetime, cast(cc.Last_Update_Date_Id as char(10)), 112), apollo.DEAL_SYSUPDT_DATE) as LastUpdateDate,
+                convert(date, cast(cc.Trade_Date_Id as char(10)), 112) as TradeDate,
+          
+                sp.Source_Platform as SourceSystemName,
+                isnull(cc.Deal_Id, apollo.DEAL_ID) as ApolloId,
+                apollo.EXTERNAL_SOURCE_REF as SourceSystemId,
+
+                case
+                    when e.Name in ('CIT', 'CFL', 'CFI') then 'CD'
+                    when a.Activity in ('Strategic Equity') then 'EQD-StratEQ'
+                    when a.Activity in ('SPS') then 'EQD-Structured'
+                    when a.Activity in ('RLP') then 'EQD-ETS'
+                    when a.Activity in ('Prime services', 'Financing', 'ECA', 'GES') then 'PS & Fin'
+                    when a.Activity in ('CIT', 'Investors') then 'CD'
+                    when a.Activity in ('Flow') then 'EQD-Flow'   
+                    else a.Activity 
+                end as BusinessLineFI,
+
+                case
+                    when e.Name  in ('CIT', 'CFL', 'CFI') then 'CD'
+                    when a.Activity in ('Strategic Equity', 'RLP', 'SPS', 'Flow') then 'EQD'
+                    when a.Activity in ('Prime services', 'Financing', 'ECA', 'GES') then 'PS & Fin'
+                    when a.Activity in ('CIT', 'Investors') then 'CD'
+                    else a.Activity
+                end as MarketingGBL,
+     
+                case
+                    when ga.Name in ('ASIA', 'SINGAPORE') then 'ASIA'
+                    when ga.Name in ('AMERICAS', 'NEW YORK') then 'AMERICAS'
+                    when ga.Name in ('PARIS', 'LONDON') then 'EMA'
+                    else ga.Name
+                end as MarketingRegion,
+
+                case
+                    when tbl1.Name = 'COMMODITY DERIVATIVES' then 'CD'
+                    when tbl1.Name = 'Structured Equity' then 'EQD'
+                    when a.Activity in ('Convertibles Market Making', 'Index Flow', 'Stock Flow', 'Forward Trading', 'Index and Stocks Exotics', 'Exchange Traded Solutions', 'Complex Structures and Underlyings') then 'EQD'
+                    when a.Activity in ('Equity Cash Asia', 'Equity Finance', 'GES', 'Prime Brokerage', 'SLAB', 'Listed Derivatives') then 'PS & Fin'
+                    when a.Activity in ('Collateral and Liquidity Management', 'Legacy HF Book', 'CSU HF Book') then 'Global Management'
+                    when tbl.Name in ('COMMODITIES INDEX TRADING', 'COMMODITY DERIVATIVES') then 'CD'
+                    when tbl.Name in ('FLOW', 'Flow and Financing', 'Structured Equity', 'OPTIONS') then 'EQD'
+                    when tbl.Name in ('EQUITY FINANCING', 'EQUITY TRADING AND FINANCING') then 'PS & Fin'
+                    when tbl.Name in ('GLOBAL MANAGEMENT', 'HAREWOOD') then 'Global Management' 
+                    else null
+                end as TradingGBL,
+          
+                apollo.DEAL_SYS_STATUS as [Status]
+
+            from SpyBo.CC_Report cc with (nolock)
+            join SpyBo.History h on h.Id = cc.History_Id
+            join SpyBo.Entities e on e.Id = cc.Entity_Id_Visible and e.History_Id = h.Id
+            join SpyBo.Geo_Areas ga on ga.Id = cc.Geo_Area_Id and ga.History_Id = h.Id
+            join SpyBo.Products_Details pd on pd.Id = cc.Product_Detail_Id and pd.History_Id = h.Id
+            join SpyBo.Products_Families pf on pf.Id = cc.Product_Family_Id and pf.History_Id = h.Id
+            join SpyBo.Sales_Groups sg on sg.Id = cc.Sales_Group_Id and sg.History_Id = h.Id
+            join SpyBo.Trading_Books tb on tb.Id = cc.Trading_Book_Id and tb.History_Id = h.Id
+            join SpyBo.Trading_Business_Lines tbl1 on tbl1.Id = tb.Business_Line_ID and tbl1.History_Id = h.Id
+            left join SpyBo.Trading_Strategies ts1 on ts1.Ts_Id = tb.Strategy_Id and ts1.History_Id = h.Id
+            join SpyBo.Trading_Groups tg on tg.Id = cc.Trading_Group_Id and tg.History_Id = h.Id
+            left join SpyBo.Trading_Strategies ts2 on ts2.Ts_Id = tg.Strategy_Id and ts2.History_Id = h.Id
+            join SpyBo.Users su on su.Id = cc.Sales_Id and su.History_Id = h.Id
+            join SpyBo.CRDS_Entity cp on cp.Entity_Id = cc.Legal_Entity_Id and cp.History_Id = h.Id
+            join SpyBo.Activities a on a.Id = cc.Activity_Id and a.History_Id = h.Id
+            join SpyBo.Trading_Business_Lines tbl on tbl.Id = cc.Deal_Trading_Business_Line_ID and tbl.History_Id = h.Id
+            join SpyBo.Marketing_client mc on mc.Marketing_Client_Id = cc.Marketing_Client_Id and mc.History_Id = h.Id
+            join SpyBo.Source_Platform sp on sp.Source_Platform_Id = cc.Source_Platform_Id
+            join SpyBo.Cities dc on dc.Id = cc.Deal_Sales_Location_Id and dc.History_Id = h.Id
+            left join SpyBo.Cities bl on bl.Id = cc.Trading_Book_Location_Id and bl.History_Id = h.Id
+            right join Apollo.dbo.T_FIN_DEAL apollo with (nolock) on apollo.DEAL_ID = cc.Deal_Id -- Deleted deals don't show up in the EQDSpyBo database
+            where (
+                   cc.Revenue_Date_Id > 20130000 -- This is a hard limit to never return older rows
+                or (cc.Deal_Id is null and apollo.DEAL_TRADE_DATE between '2013-01-01' and h.Report_Date) -- This is a hard limit to never return older rows
+            )
+            and (h.Delta_Date = 0 and h.Cur_report_flag = 0 and h.Feed_type ='C')
+        )
+
+        select BookBusinessLine, [2013], [2014], [2015]
+        from (
+            select 
+                year(RevenueDate) as RevenueDate,
+                isnull(BookBusinessLine, '') as BookBusinessLine,
+                --count(*) as TotalCc1
+                sum(Cc1DealsDoneEur) as TotalCc1
+            from ClientContribution
+            where RevenueDate >= '2013-01-01' and RevenueDate < '2016-01-01'
+            group by year(RevenueDate), BookBusinessLine
+        ) s
+        pivot (
+            sum(TotalCc1)
+            for RevenueDate in ([2013], [2014], [2015])
+        ) as p
+        order by 1
+        ]]>
+      </Expected>
+      <Actual>
+        <![CDATA[
+          select BookBusinessLine, [2013], [2014], [2015] 
+          from (
+              select 
+                  year(RevenueDate) as RevenueDate,
+                  isnull(BookBusinessLine, '') as BookBusinessLine,
+                  sum(Cc1DealsDoneEur) as TotalCc1
+              from DittoEtl.apollo.ClientContributionArchive
+              where RevenueDate >= '2013-01-01' and RevenueDate < '2016-01-01'
+              group by year(RevenueDate), BookBusinessLine
+          ) s 
+          pivot (
+              sum(TotalCc1)
+              for RevenueDate in ([2013], [2014], [2015])
+          ) as p
+          order by 1
+        ]]>
+      </Actual>
+    </ParallelCheck>
+    
+    <Entity Connection="dittoedw"  Name="reports.FactClientContribution">
+      <!-- This one is much harder to generalize the below is just a quick version. -->
+      <!-- Also note that a view has been used to shape the data correctly for this check. -->
+      <MovingAverage Field="ClientContribution" Period="TradeDateKey" Periods="10" Tolerance="100000" />
+    </Entity>
+  </Feature>
+</DataCheck>

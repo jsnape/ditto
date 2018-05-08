@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Ditto.DataForge.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LogFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ditto-loaders-dataforge-trace.log</Value>
+    </Setting>
+    <Setting Name="ErrorFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ditto-loaders-dataforge-error.log</Value>
+    </Setting>
+    <Setting Name="LogLevel" Type="System.Diagnostics.Tracing.EventLevel" Scope="Application">
+      <Value Profile="(Default)">Informational</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

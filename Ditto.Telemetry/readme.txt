@@ -1,0 +1,3 @@
+﻿This library is heavily modelled on the Microsoft Application Insights API with the hope that one day we might be allowed to use such a brilliant tool...
+
+Until then this is a poor replacement.

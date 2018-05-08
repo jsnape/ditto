@@ -1,0 +1,9 @@
+{
+    "default": true,
+    "no-trailing-spaces": false,
+    "line-length": false,
+    "ol-prefix": {
+      "style": "ordered"
+    },
+    "no-bare-urls": false
+}

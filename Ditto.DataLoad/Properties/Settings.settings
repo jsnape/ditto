@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Ditto.DataLoad.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LogFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ditto-loaders-DataLoad-trace.log</Value>
+    </Setting>
+    <Setting Name="ErrorFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ditto-loaders-DataLoad-error.log</Value>
+    </Setting>
+    <Setting Name="LogLevel" Type="System.Diagnostics.Tracing.EventLevel" Scope="Application">
+      <Value Profile="(Default)">Informational</Value>
+    </Setting>
+    <Setting Name="DefaultHighWatermark" Type="System.DateTime" Scope="Application">
+      <Value Profile="(Default)">2014-01-01</Value>
+    </Setting>
+    <Setting Name="TargetConnectionString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source=(local);Initial Catalog=DittoEdw;Integrated Security=SSPI;</Value>
+    </Setting>
+    <Setting Name="TelemetryTable" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">dbo.TelemetryLog</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

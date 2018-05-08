@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataCheck>
+  <Connection Name="output" Provider="FileSystem" ConnectionString=".\GeneratedData" />
+
+  <Domain Name="Title" Type="List">Mr,Miss,Mrs,Dr,Ms</Domain>
+  <Domain Name="Person Type" Type="List">Permanent Partner</Domain>
+    
+  <Entity Name="Person" Type="Cache" MinRows="30000">
+    <Field Name="Person ID" Domain="AutoIncrement" />
+    <Field Name="Employee Number" Domain="AutoIncrement" />
+    <Field Name="Title" Domain="Title" />
+    <Field Name="First Name" Type="String(150)" />
+    <Field Name="Middle Names" Type="String(60)" />
+    <Field Name="Last Name" Type="String(150)" />
+    <Field Name="Known As" Type="String(80)" />
+    <Field Name="Date of Birth" Type="Date" Min="1920-01-01" Max="2000-01-01" />
+    <Field Name="Ethnicity" Type="String(150)" Nulls="100%" />
+    <Field Name="Marital Status" Type="String(150)" Nulls="100%" />
+    <Field Name="NI Number" Type="String(30)" Nulls="100%" />
+    <Field Name="Gender" Type="String(30)" Nulls="100%" />
+
+    <Field Name="Person Type" Type="String" Domain="Person Type" />
+    <Field Name="Period of Service Start Date" Type="Date" Min="1970-01-01" Max="@(Today)" />
+    <Field Name="Termination Date" Type="Date" Min="1970-01-01" Max="@(Today)" Nulls="75%" />
+    <Field Name="Termination Reason" Type="String" Nulls="100%" />
+    <Field Name="Acquired Company Code" Type="String(150)" Nulls="100%" />
+    <Field Name="Acquired Company Start Date" Type="Date(Null)" Nulls="100%" />
+
+  </Entity>
+
+  <Entity Name="Position" Type="Cache" MinRows="30000">
+    <Field Name="Position Full Name" Type="String(240)"/>
+    <Field Name="Partnership Level" Type="Integer"/>
+    <Field Name="Position FTE" Type="Float" Min="1" Max="45" />
+    <Field Name="Position Exclude from Sunday Premium" Type="String(1)" />
+    <Field Name="Position Exclude from BH Premium" Type="String(1)" />
+    <Field Name="Positon Pre 2003 Rules" Type="String(1)" />
+    <Field Name="Rec Rate" Type="Float" Min="0" Max="9999990.9999" />
+    <Field Name="Rec Rate Basis" Type="Float" Min="0" Max="9999990.9999" />
+  </Entity>
+    
+  <Entity Name="PersonAssignment" MinRows="100000" Connection="output">
+    <Lookup Name="Position" Entity="Position" />
+    <Lookup Name="Person" Entity="Person" />
+    <Lookup Name="Line Manager" Entity="Person" />
+    
+    <Field Name="Assignment ID" Domain="AutoIncrement" />
+
+    <Field Name="Person ID" Ref="Person" />
+    <Field Name="Employee Number" Ref="Person" />
+    <Field Name="Title" Ref="Person" />
+    <Field Name="First Name" Ref="Person" />
+    <Field Name="Middle Names" Ref="Person" />
+    <Field Name="Last Name" Ref="Person" />
+    <Field Name="Known As" Ref="Person" />
+    <Field Name="Date of Birth" Ref="Person" />
+    <Field Name="Ethnicity" Ref="Person" />
+    <Field Name="Marital Status" Ref="Person" />
+    <Field Name="NI Number" Ref="Person" />
+    <Field Name="Gender" Ref="Person" />
+
+    <Field Name="Person Type" Ref="Person" />
+    <Field Name="Period of Service Start Date" Ref="Person" />
+    <Field Name="Termination Date" Ref="Person" />
+    <Field Name="Termination Reason" Ref="Person" />
+    <Field Name="Acquired Company Code" Ref="Person" />
+    <Field Name="Acquired Company Start Date" Ref="Person" />
+
+    <Field Name="Assignment Number" Type="String(30)" Format=""/>
+
+    <Field Name="Position Full Name" Ref="Position"/>
+
+  </Entity>
+</DataCheck>

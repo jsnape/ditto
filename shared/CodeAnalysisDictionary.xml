@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Api</Word>
+      <Word>Dts</Word>
+      <Word>Etl</Word>
+      <Word>Mrx</Word>
+      <Word>Csv</Word>
+      <Word>Edw</Word>
+      <Word>Fiml</Word>
+      <Word>Crds</Word>
+      <Word>Edw</Word>
+      <Word>XPath</Word>
+      <Word>MQ</Word>
+      <Word>Fx</Word>
+      <Word>Efx</Word>
+      <Word>OK</Word>
+      <Word>Marketplayer</Word>
+      <Word>Rmpm</Word>
+      <Word>Initialise</Word>
+      <Word>Initialisation</Word>
+      <Word>Autofac</Word>
+      <Word>Moq</Word>
+      <Word>XUnit</Word>
+      <Word>Ssis</Word>
+      <Word>Ccy</Word>
+      <Word>Isin</Word>
+      <Word>Dmo</Word>
+      <Word>Iso</Word>
+      <Word>Alpha</Word>
+      <Word>Mds</Word>
+      <Word>Metier</Word>
+      <Word>Cdg</Word>
+      <Word>Powershell</Word>
+      <Word>Cmdlet</Word>
+      <Word>serializer</Word>
+      <Word>callback</Word>
+      <Word>callbacks</Word>
+      <Word>catalog</Word>
+    </Recognized>
+    <Deprecated>
+      <Term PreferredAlternate="CanRetry">Retryable</Term>
+      <Term PreferredAlternate="Initialize">Initialise</Term>
+      <Term PreferredAlternate="Initialization">Initialisation</Term>
+    </Deprecated>
+    <!--
+    <Unrecognized>
+      <Word>knokker</Word>
+    </Unrecognized>
+    <Compound>
+      <Term CompoundAlternate=""></Term>
+    </Compound>
+    -->
+    <DiscreteExceptions>
+      <Term>XPath</Term>
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>XPath</Acronym>
+      <Acronym>MQ</Acronym>
+      <Acronym>Db</Acronym>
+      <Acronym>OK</Acronym>
+      <Acronym>GMT</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
