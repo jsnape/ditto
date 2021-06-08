@@ -16,10 +16,9 @@ namespace Ditto.DataLoad
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Text.RegularExpressions;
+    using CsvHelper;
     using Ditto.Core;
     using Ditto.DataLoad.Properties;
-    using CsvHelper;
     using Csv = CsvHelper.Configuration;
 
     /// <summary>
@@ -75,17 +74,17 @@ namespace Ditto.DataLoad
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             if (sourceFile == null)
             {
-                throw new ArgumentNullException("sourceFile");
+                throw new ArgumentNullException(nameof(sourceFile));
             }
 
             DittoEventSource.Log.LoadingFile(sourceFile);
             this.sourceFile = sourceFile;
-            this.configuration = config ?? throw new ArgumentNullException("config");
+            this.configuration = config ?? throw new ArgumentNullException(nameof(config));
 
             this.reader = new CsvReader(source, config);
 
@@ -103,10 +102,14 @@ namespace Ditto.DataLoad
 
             if (this.configuration.HasHeaderRecord)
             {
+                this.reader.ReadHeader();
+
                 this.normalizedHeaders =
                     this.reader.Context.HeaderRecord
                     .Select(h => this.NormalizeFieldHeader(h))
                     .ToArray();
+
+                this.closed = !this.reader.Read();
             }
             else
             {
@@ -170,19 +173,21 @@ namespace Ditto.DataLoad
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.Data.DataTable" /> that describes the column metadata of the <see cref="T:System.Data.IDataReader" />.
+        /// Returns a <see cref="System.Data.DataTable" /> that describes the column metadata of the <see cref="System.Data.IDataReader" />.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Data.DataTable" /> that describes the column metadata.
+        /// A <see cref="System.Data.DataTable" /> that describes the column metadata.
         /// </returns>
         /// <exception cref="System.NotImplementedException">Not implemented.</exception>
+#pragma warning disable CA1024 // Use properties where appropriate
         public DataTable GetSchemaTable()
+#pragma warning restore CA1024 // Use properties where appropriate
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Advances the <see cref="T:System.Data.IDataReader" /> to the next record.
+        /// Advances the <see cref="System.Data.IDataReader" /> to the next record.
         /// </summary>
         /// <returns>
         /// True if there are more rows; otherwise, false.
@@ -243,11 +248,13 @@ namespace Ditto.DataLoad
         }
 
         /// <summary>
-        /// Gets the <see cref="T:System.Type" /> information corresponding to the type of <see cref="T:System.Object" /> that would be returned from <see cref="M:System.Data.IDataRecord.GetValue(System.Int32)" />.
+        /// Gets the <see cref="System.Type" /> information corresponding to the type of <see cref="System.Object" />
+        /// that would be returned from <see cref="System.Data.IDataRecord.GetValue(System.Int32)" />.
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Type" /> information corresponding to the type of <see cref="T:System.Object" /> that would be returned from <see cref="M:System.Data.IDataRecord.GetValue(System.Int32)" />.
+        /// The <see cref="System.Type" /> information corresponding to the type of <see cref="System.Object" />
+        /// that would be returned from <see cref="System.Data.IDataRecord.GetValue(System.Int32)" />.
         /// </returns>
         /// <exception cref="System.NotImplementedException">Not implemented.</exception>
         public Type GetFieldType(int i)
@@ -321,7 +328,7 @@ namespace Ditto.DataLoad
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Object" /> which will contain the field value upon return.
+        /// The <see cref="System.Object" /> which will contain the field value upon return.
         /// </returns>
         public object GetValue(int i)
         {
@@ -344,9 +351,9 @@ namespace Ditto.DataLoad
         /// <summary>
         /// Populates an array of objects with the column values of the current record.
         /// </summary>
-        /// <param name="values">An array of <see cref="T:System.Object" /> to copy the attribute fields into.</param>
+        /// <param name="values">An array of <see cref="System.Object" /> to copy the attribute fields into.</param>
         /// <returns>
-        /// The number of instances of <see cref="T:System.Object" /> in the array.
+        /// The number of instances of <see cref="System.Object" /> in the array.
         /// </returns>
         /// <exception cref="System.NotImplementedException">Not implemented.</exception>
         public int GetValues(object[] values)
@@ -371,7 +378,7 @@ namespace Ditto.DataLoad
         #region IDataReader forwarding functions
 
         /// <summary>
-        /// Closes the <see cref="T:System.Data.IDataReader" /> Object.
+        /// Closes the <see cref="System.Data.IDataReader" /> Object.
         /// </summary>
         public void Close()
         {
@@ -430,11 +437,11 @@ namespace Ditto.DataLoad
         }
 
         /// <summary>
-        /// Returns an <see cref="T:System.Data.IDataReader" /> for the specified column ordinal.
+        /// Returns an <see cref="System.Data.IDataReader" /> for the specified column ordinal.
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Data.IDataReader" /> for the specified column ordinal.
+        /// The <see cref="System.Data.IDataReader" /> for the specified column ordinal.
         /// </returns>
         /// <exception cref="System.NotImplementedException">Not implemented.</exception>
         public IDataReader GetData(int i)

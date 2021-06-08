@@ -11,9 +11,9 @@ namespace Ditto.DataLoad.Tests
     using System;
     using System.Linq;
     using Ditto.Core;
-    using Csv = CsvHelper.Configuration;
     using NSubstitute;
     using Xunit;
+    using Csv = CsvHelper.Configuration;
 
     /// <summary>
     /// CsvDataSource Facts.
@@ -60,9 +60,10 @@ namespace Ditto.DataLoad.Tests
 
             this.fileSystemService = new FakeFileSystemService(fakeFiles, fakeContents);
 
-            this.target = new CsvDataSource("test source", FakeDataConnection, "*.csv", FolderMode.MultipleFile, new Csv.Configuration(), this.fileSystemService);
-
-            this.target.Parent = Substitute.For<IDataOperationInfo>();
+            this.target = new CsvDataSource("test source", FakeDataConnection, "*.csv", FolderMode.MultipleFile, new Csv.Configuration(), this.fileSystemService)
+            {
+                Parent = Substitute.For<IDataOperationInfo>()
+            };
         }
 
         /// <summary>

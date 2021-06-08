@@ -1,185 +1,202 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="All" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Label="Default values">
-    <Configuration>Release</Configuration>
-    <Platform>Any CPU</Platform>
-    <ProductName>Ditto</ProductName>
-    <FastBuild Label="Skips some slow unnecessary tasks.">True</FastBuild>
-  </PropertyGroup>
+    <PropertyGroup Label="Default values">
+        <Configuration>Release</Configuration>
+        <Platform>Any CPU</Platform>
+        <ProductName>Ditto</ProductName>
+        <FastBuild Label="Skips some slow unnecessary tasks.">True</FastBuild>
+    </PropertyGroup>
 
-  <PropertyGroup Label="Global Properties">
-    <BuildNumber Condition=" '$(BuildNumber)' == '' ">$(BUILD_NUMBER)</BuildNumber>
-    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
-    <ProductVersion>1.0.$(BuildNumber)$(PrereleaseTag)</ProductVersion>
-    <TeamCityVersion>$(TEAMCITY_VERSION)</TeamCityVersion>
- </PropertyGroup>
+    <PropertyGroup Label="Global Properties">
+        <BuildNumber Condition=" '$(BuildNumber)' == '' ">$(BUILD_NUMBER)</BuildNumber>
+        <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+        <ProductVersion>1.0.$(BuildNumber)$(PrereleaseTag)</ProductVersion>
+        <TeamCityVersion>$(TEAMCITY_VERSION)</TeamCityVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Label="Build paths">
-    <RootPath>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\'))</RootPath>
-    <BuildPath>$(RootPath)build\</BuildPath>
-    <ConfigPath>$(RootPath)config\</ConfigPath>
-    <DeployPath>$(RootPath)deploy\</DeployPath>
-    <SourcePath>$(RootPath)</SourcePath>
-    <OutputPath>$(RootPath)output\</OutputPath>
-    <PackagePath>$(RootPath)package\</PackagePath>
-    <CodeAnalysisDictionary>$(SourcePath)shared\CodeAnalysisDictionary.xml</CodeAnalysisDictionary>
-    <CodeAnalysisRuleSet>$(SourcePath)shared\Ditto.ruleset</CodeAnalysisRuleSet>
-    <StyleCopOverrideSettingsFile>$(SourcePath)Settings.StyleCop</StyleCopOverrideSettingsFile>
-  </PropertyGroup>
+    <PropertyGroup Label="Build paths">
+        <RootPath>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\'))</RootPath>
+        <BuildPath>$(RootPath)build\</BuildPath>
+        <ConfigPath>$(RootPath)config\</ConfigPath>
+        <DeployPath>$(RootPath)deploy\</DeployPath>
+        <SourcePath>$(RootPath)</SourcePath>
+        <OutputPath>$(RootPath)output\</OutputPath>
+        <PackagePath>$(RootPath)package\</PackagePath>
+        <CodeAnalysisDictionary>$(SourcePath)shared\CodeAnalysisDictionary.xml</CodeAnalysisDictionary>
+        <CodeAnalysisRuleSet>$(SourcePath)shared\Ditto.ruleset</CodeAnalysisRuleSet>
+        <StyleCopOverrideSettingsFile>$(SourcePath)Settings.StyleCop</StyleCopOverrideSettingsFile>
+    </PropertyGroup>
 
-  <ItemGroup Label="Visual Studio Solutions and Projects to MSBuild">
-    <MSBuildProject Include="$(SourcePath)Ditto.sln">
-      <AdditionalProperties>Configuration=$(Configuration);Platform=$(Platform);CodeAnalysisDictionary=$(CodeAnalysisDictionary);CodeAnalysisRuleSet=$(CodeAnalysisRuleSet);RunCodeAnalysis=true;TreatWarningsAsErrors=true;CodeAnalysisTreatWarningsAsErrors=true</AdditionalProperties>
-    </MSBuildProject>
-  </ItemGroup>
-
-  <ItemGroup Label="C# Source files">
-    <SourceFiles Include="$(SourcePath)**\*.cs" Exclude="$(SourcePath)**\obj\**\*.cs;$(SourcePath)deleted\*.cs" />
-  </ItemGroup>
-
-  <!-- This has to be wrapped in a target to ensure it executes after the code has been built -->
-  <Target Name="_GenerateTestList">
-    <ItemGroup Label="Unit Test Assemblies">
-      <UnitTestAssembly Include="$(OutputPath)*.Tests.dll"/>
-      <UnitTestAssembly Include="$(OutputPath)*.Specs.dll"/>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="_GeneratePackingList">
-    <ItemGroup Label="Package Files">
-
-      <PackageSources Include="$(DeployPath)**\*.*" Exclude="$(DeployPath)**\.svn\**;$(DeployPath)**\_svn\**;$(DeployPath)apps\**\*.*">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder></PackageSubfolder>
-      </PackageSources>
-      <PackageSources Condition="Exists('$(SourcePath)$(ProductName).nuspec')" Include="$(SourcePath)$(ProductName).nuspec">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder></PackageSubfolder>
-      </PackageSources>
-      <PackageSources Include="$(DeployPath)\**\*.*" Exclude="$(DeployPath)**\.svn\**;$(DeployPath)**\_svn\**;">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder></PackageSubfolder>
-      </PackageSources>
-      <PackageSources
-        Include="$(SourcePath)Ditto.Fabric.Scripts\**\*.ps1"
-        Exclude="$(SourcePath)Ditto.Fabric.Scripts\**\.svn\**;$(SourcePath)Ditto.Fabric.Scripts\**\_svn\**;$(SourcePath)Ditto.Fabric.Scripts\**\bin\**;$(SourcePath)Ditto.Fabric.Scripts\**\obj\**;$(SourcePath)Ditto.Fabric.Scripts\*.pssproj;">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder></PackageSubfolder>
-      </PackageSources>
-      <PackageSources
-        Include="$(SourcePath)Ditto.Fabric.Jobs\**\*.ps*1;"
-        Exclude="$(SourcePath)Ditto.Fabric.Jobs\**\.svn\**;$(SourcePath)Ditto.Fabric.Jobs\**\_svn\**;$(SourcePath)Ditto.Fabric.Jobs\**\bin\**;$(SourcePath)Ditto.Fabric.Jobs\**\obj\**;$(SourcePath)Ditto.Fabric.Jobs\*.pssproj;$(SourcePath)Ditto.Fabric.Jobs\*.tests.ps1">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder>Modules\DittoJobs\</PackageSubfolder>
-      </PackageSources>
-      <PackageSources
-          Include="$(OutputPath)*.exe;$(OutputPath)*.dll;$(OutputPath)*.pdb;$(OutputPath)*.config"
-          Exclude="$(OutputPath)*CodeAnalysisLog.xml;$(OutputPath)*.log;">
-        <PackageName>$(ProductName)</PackageName>
-        <PackageSubfolder></PackageSubfolder>
-      </PackageSources>
-    </ItemGroup>
-  </Target>
-
-  <!-- Implementation details below here. -->
-
-  <Import Project="$(SourcePath)packages\xunit.runner.msbuild.2.3.1\build\net452\xunit.runner.msbuild.props"/>
-
-  <UsingTask Condition="Exists('$(BuildPath)StyleCop.dll')" AssemblyFile="$(BuildPath)StyleCop.dll" TaskName="StyleCopTask"/>
-
-  <Target Name="Clean">
-    <ItemGroup>
-      <FilesToClean Include="$(OutputPath)**" />
-      <FilesToClean Include="$(PackagePath)**" />
+    <ItemGroup Label="Visual Studio Solutions and Projects to MSBuild">
+        <MSBuildProject Include="$(SourcePath)Ditto.sln">
+            <AdditionalProperties>Configuration=$(Configuration);Platform=$(Platform);CodeAnalysisDictionary=$(CodeAnalysisDictionary);CodeAnalysisRuleSet=$(CodeAnalysisRuleSet);RunCodeAnalysis=true;TreatWarningsAsErrors=true;CodeAnalysisTreatWarningsAsErrors=true</AdditionalProperties>
+        </MSBuildProject>
     </ItemGroup>
 
-    <MSBuild Projects="@(MSBuildProject)" Targets="Clean" BuildInParallel="true"/>
-    <Delete Files="@(FilesToClean)" />
-    <RemoveDir Directories="%(FilesToClean.RecursiveDir)" />
-    <RemoveDir Directories="$(OutputPath);$(PackagePath)" />
-  </Target>
-
-  <Target Name="SourceAnalysis">
-    <StyleCopTask Condition="Exists('$(BuildPath)StyleCop.dll')"
-                  ProjectFullPath="$(OutputPath)"
-                  SourceFiles="@(SourceFiles)"
-                  ForceFullAnalysis="true"
-                  TreatErrorsAsWarnings="false"
-                  CacheResults="true"
-                  OutputFile="StyleCopViolations.xml"
-                  MaxViolationCount="0"
-                  OverrideSettingsFile="$(StyleCopOverrideSettingsFile)">
-                  <Output TaskParameter="ViolationCount" PropertyName="StyleCopViolationCount" />
-    </StyleCopTask>
-
-    <TeamCityReportStatsValue Condition=" '$(TEAMCITY_VERSION)' != '' " Key="StyleCopViolationCount" Value="$(StyleCopViolationCount)" />
-  </Target>
-
-  <Target Name="Compile">
-    <MSBuild Projects="@(MSBuildProject)" Targets="Build" BuildInParallel="true" Properties="OutDir=$(OutputPath);"/>
-  </Target>
-
-  <Target Name="Test" DependsOnTargets="_GenerateTestList">
-    <Message Text="Xunit Assemblies='@(UnitTestAssembly)'" />
-    <Xunit Assemblies="@(UnitTestAssembly)" />
-  </Target>
-
-  <PropertyGroup>
-    <_StyleCopSourcePath>$(MSBuildProgramFiles32)\StyleCop 4.7\</_StyleCopSourcePath>
-    <_StyleCopDestinationPath>$(BuildPath)%(RecursiveDir)%(FileName)%(Extension)</_StyleCopDestinationPath>
-    <_PackageDestinationPath>$(PackagePath)%(PackageName)\%(PackageSubfolder)%(RecursiveDir)%(FileName)%(Extension)</_PackageDestinationPath>
-    <_Packages>$(PackagePath)*\$(ProductName)</_Packages>
-    <_NuGetExe>$(BuildPath)NuGet.exe</_NuGetExe>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.dll" />
-    <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.CSharp.dll" />
-    <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.CSharp.Rules.dll" />
-  </ItemGroup>
-
-  <Target Name="_RefreshStyleCopAssemblies"
-          Condition="Exists('$(_StyleCopSourcePath)') And '$(TeamCityVersion)' == ''"
-          Inputs="@(_StyleCopAssembies)"
-          Outputs="@(_StyleCopAssembies->'$(_StyleCopDestinationPath)')">
-    <Copy SourceFiles="@(_StyleCopAssembies)" DestinationFiles="@(_StyleCopAssembies->'$(_StyleCopDestinationPath)')" />
-  </Target>
-
-  <Target Name="_RestorePackages">
-    <Exec Condition=" '$(TeamCityVersion)' == '' And '$(FastBuild)' != 'True' " WorkingDirectory="$(SourcePath)" Command="$(_NuGetExe) update -Self" />
-    <Exec WorkingDirectory="$(SourcePath)" Command="$(_NuGetExe) restore %(MSBuildProject.Identity)" />
-  </Target>
-
-  <Target Name="Build" DependsOnTargets="_RefreshStyleCopAssemblies;_RestorePackages;SourceAnalysis;Compile;Test;">
-  </Target>
-
-  <Target Name="_AssemblePackage"
-          DependsOnTargets="_GeneratePackingList"
-          Inputs="@(PackageSources)"
-          Outputs="@(PackageSources->'$(_PackageDestinationPath)')">
-    <Copy SourceFiles="@(PackageSources)" DestinationFiles="@(PackageSources->'$(_PackageDestinationPath)')"/>
-  </Target>
-
-  <Target Condition="False" Name="Package" DependsOnTargets="_AssemblePackage">
-    <ItemGroup>
-      <_NuSpecFiles Include="$(PackagePath)**/*.nuspec" />
-      <_NuPkgFiles Include="$(PackagePath)**/*.nupkg" />
+    <ItemGroup Label="C# Source files">
+        <SourceFiles Include="$(SourcePath)**\*.cs" Exclude="$(SourcePath)**\obj\**\*.cs;$(SourcePath)deleted\*.cs" />
     </ItemGroup>
 
-    <Delete Files="@(_NuPkgFiles)" />
+    <!-- This has to be wrapped in a target to ensure it executes after the code has been built -->
 
-    <Message Text="Building models: %(_NuSpecFiles.Identity)"/>
-    <Exec WorkingDirectory="%(_NuSpecFiles.RootDir)%(_NuSpecFiles.Directory)" Command="$(_NuGetExe) pack -Version $(ProductVersion) -NoPackageAnalysis" />
+    <UsingTask TaskName="DownloadFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Address ParameterType="System.String" Required="true"/>
+            <FileName ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System" />
+            <Code Type="Fragment" Language="cs">
+            <![CDATA[
+            new System.Net.WebClient().DownloadFile(Address, FileName);
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="_GenerateTestList">
+        <ItemGroup Label="Unit Test Assemblies">
+            <UnitTestAssembly Include="$(OutputPath)*.Tests.dll"/>
+            <UnitTestAssembly Include="$(OutputPath)*.Specs.dll"/>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="_GeneratePackingList">
+        <ItemGroup Label="Package Files">
+
+            <PackageSources Include="$(DeployPath)**\*.*" Exclude="$(DeployPath)**\.svn\**;$(DeployPath)**\_svn\**;$(DeployPath)apps\**\*.*">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder></PackageSubfolder>
+            </PackageSources>
+            <PackageSources Condition="Exists('$(SourcePath)$(ProductName).nuspec')" Include="$(SourcePath)$(ProductName).nuspec">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder></PackageSubfolder>
+            </PackageSources>
+            <PackageSources Include="$(DeployPath)\**\*.*" Exclude="$(DeployPath)**\.svn\**;$(DeployPath)**\_svn\**;">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder></PackageSubfolder>
+            </PackageSources>
+            <PackageSources
+              Include="$(SourcePath)Ditto.Fabric.Scripts\**\*.ps1"
+              Exclude="$(SourcePath)Ditto.Fabric.Scripts\**\.svn\**;$(SourcePath)Ditto.Fabric.Scripts\**\_svn\**;$(SourcePath)Ditto.Fabric.Scripts\**\bin\**;$(SourcePath)Ditto.Fabric.Scripts\**\obj\**;$(SourcePath)Ditto.Fabric.Scripts\*.pssproj;">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder></PackageSubfolder>
+            </PackageSources>
+            <PackageSources
+              Include="$(SourcePath)Ditto.Fabric.Jobs\**\*.ps*1;"
+              Exclude="$(SourcePath)Ditto.Fabric.Jobs\**\.svn\**;$(SourcePath)Ditto.Fabric.Jobs\**\_svn\**;$(SourcePath)Ditto.Fabric.Jobs\**\bin\**;$(SourcePath)Ditto.Fabric.Jobs\**\obj\**;$(SourcePath)Ditto.Fabric.Jobs\*.pssproj;$(SourcePath)Ditto.Fabric.Jobs\*.tests.ps1">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder>Modules\DittoJobs\</PackageSubfolder>
+            </PackageSources>
+            <PackageSources
+                Include="$(OutputPath)*.exe;$(OutputPath)*.dll;$(OutputPath)*.pdb;$(OutputPath)*.config"
+                Exclude="$(OutputPath)*CodeAnalysisLog.xml;$(OutputPath)*.log;">
+                <PackageName>$(ProductName)</PackageName>
+                <PackageSubfolder></PackageSubfolder>
+            </PackageSources>
+        </ItemGroup>
+    </Target>
+
+    <!-- Implementation details below here. -->
+
+    <Import Project="$(SourcePath)packages\xunit.runner.msbuild.2.3.1\build\net452\xunit.runner.msbuild.props"/>
+
+    <UsingTask Condition="Exists('$(BuildPath)StyleCop.dll')" AssemblyFile="$(BuildPath)StyleCop.dll" TaskName="StyleCopTask"/>
+
+    <Target Name="Clean">
+        <ItemGroup>
+            <FilesToClean Include="$(OutputPath)**" />
+            <FilesToClean Include="$(PackagePath)**" />
+        </ItemGroup>
+
+        <MSBuild Projects="@(MSBuildProject)" Targets="Clean" BuildInParallel="true"/>
+        <Delete Files="@(FilesToClean)" />
+        <RemoveDir Directories="%(FilesToClean.RecursiveDir)" />
+        <RemoveDir Directories="$(OutputPath);$(PackagePath)" />
+    </Target>
+
+    <Target Name="SourceAnalysis">
+        <StyleCopTask Condition="Exists('$(BuildPath)StyleCop.dll')"
+                      ProjectFullPath="$(OutputPath)"
+                      SourceFiles="@(SourceFiles)"
+                      ForceFullAnalysis="true"
+                      TreatErrorsAsWarnings="false"
+                      CacheResults="true"
+                      OutputFile="StyleCopViolations.xml"
+                      MaxViolationCount="0"
+                      OverrideSettingsFile="$(StyleCopOverrideSettingsFile)">
+            <Output TaskParameter="ViolationCount" PropertyName="StyleCopViolationCount" />
+        </StyleCopTask>
+
+        <TeamCityReportStatsValue Condition=" '$(TEAMCITY_VERSION)' != '' " Key="StyleCopViolationCount" Value="$(StyleCopViolationCount)" />
+    </Target>
+
+    <Target Name="Compile">
+        <MSBuild Projects="@(MSBuildProject)" Targets="Build" BuildInParallel="true" Properties="OutDir=$(OutputPath);"/>
+    </Target>
+
+    <Target Name="Test" DependsOnTargets="_GenerateTestList">
+        <Message Text="Xunit Assemblies='@(UnitTestAssembly)'" />
+        <Xunit Assemblies="@(UnitTestAssembly)" />
+    </Target>
+
+    <PropertyGroup>
+        <_StyleCopSourcePath>$(MSBuildProgramFiles32)\StyleCop 4.7\</_StyleCopSourcePath>
+        <_StyleCopDestinationPath>$(BuildPath)%(RecursiveDir)%(FileName)%(Extension)</_StyleCopDestinationPath>
+        <_PackageDestinationPath>$(PackagePath)%(PackageName)\%(PackageSubfolder)%(RecursiveDir)%(FileName)%(Extension)</_PackageDestinationPath>
+        <_Packages>$(PackagePath)*\$(ProductName)</_Packages>
+        <_NuGetExe>$(BuildPath)NuGet.exe</_NuGetExe>
+    </PropertyGroup>
 
     <ItemGroup>
-      <_NuPkgPublish Include="$(PackagePath)**/*.nupkg" />
+        <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.dll" />
+        <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.CSharp.dll" />
+        <_StyleCopAssembies Include="$(_StyleCopSourcePath)StyleCop.CSharp.Rules.dll" />
     </ItemGroup>
 
-    <Message Condition=" '$(TEAMCITY_VERSION)' == '' " Text="Publish artifect: %(_NuPkgPublish.Identity)"/>
-    <TeamCityPublishArtifacts Condition=" '$(TEAMCITY_VERSION)' != '' " SourceFiles="@(_NuPkgPublish)"/>
-  </Target>
+    <Target Name="_RefreshStyleCopAssemblies"
+            Condition="Exists('$(_StyleCopSourcePath)') And '$(TeamCityVersion)' == ''"
+            Inputs="@(_StyleCopAssembies)"
+            Outputs="@(_StyleCopAssembies->'$(_StyleCopDestinationPath)')">
+        <Copy SourceFiles="@(_StyleCopAssembies)" DestinationFiles="@(_StyleCopAssembies->'$(_StyleCopDestinationPath)')" />
+    </Target>
 
-  <Target Name="All" DependsOnTargets="Build;Package" />
+    <Target Name="_RestorePackages">
+        <DownloadFile Address="https://nuget.org/nuget.exe" FileName="$(_NuGetExe)" />
+        <Exec Condition=" '$(TeamCityVersion)' == '' And '$(FastBuild)' != 'True' " WorkingDirectory="$(SourcePath)" Command="$(_NuGetExe) update -Self" />
+        <Exec WorkingDirectory="$(SourcePath)" Command="$(_NuGetExe) restore %(MSBuildProject.Identity)" />
+    </Target>
+
+    <Target Name="Build" DependsOnTargets="_RefreshStyleCopAssemblies;_RestorePackages;SourceAnalysis;Compile;Test;">
+    </Target>
+
+    <Target Name="_AssemblePackage"
+            DependsOnTargets="_GeneratePackingList"
+            Inputs="@(PackageSources)"
+            Outputs="@(PackageSources->'$(_PackageDestinationPath)')">
+        <Copy SourceFiles="@(PackageSources)" DestinationFiles="@(PackageSources->'$(_PackageDestinationPath)')"/>
+    </Target>
+
+    <Target Condition="False" Name="Package" DependsOnTargets="_AssemblePackage">
+        <ItemGroup>
+            <_NuSpecFiles Include="$(PackagePath)**/*.nuspec" />
+            <_NuPkgFiles Include="$(PackagePath)**/*.nupkg" />
+        </ItemGroup>
+
+        <Delete Files="@(_NuPkgFiles)" />
+
+        <Message Text="Building models: %(_NuSpecFiles.Identity)"/>
+        <Exec WorkingDirectory="%(_NuSpecFiles.RootDir)%(_NuSpecFiles.Directory)" Command="$(_NuGetExe) pack -Version $(ProductVersion) -NoPackageAnalysis" />
+
+        <ItemGroup>
+            <_NuPkgPublish Include="$(PackagePath)**/*.nupkg" />
+        </ItemGroup>
+
+        <Message Condition=" '$(TEAMCITY_VERSION)' == '' " Text="Publish artifect: %(_NuPkgPublish.Identity)"/>
+        <TeamCityPublishArtifacts Condition=" '$(TEAMCITY_VERSION)' != '' " SourceFiles="@(_NuPkgPublish)"/>
+    </Target>
+
+    <Target Name="All" DependsOnTargets="Build;Package" />
 
 </Project>

@@ -1,4 +1,4 @@
-﻿// <copyright file="EventPublisherFacts.cs">
+// <copyright file="EventPublisherFacts.cs">
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -7,6 +7,7 @@
 namespace Ditto.Core.Tests
 {
     using Xunit;
+    using Ditto.DomainEvents;
 
     /// <summary>
     /// EventPublisher Facts.

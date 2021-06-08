@@ -11,8 +11,8 @@ namespace Ditto.DataLoad.Tests
     using System;
     using System.Data;
     using System.IO;
-    using Csv = CsvHelper.Configuration;
     using Xunit;
+    using Csv = CsvHelper.Configuration;
 
     /// <summary>
     /// CsvDataReader Facts.
@@ -24,7 +24,7 @@ namespace Ditto.DataLoad.Tests
         /// </summary>
         private const string SimpleCsv = 
 @"stringval,intval,dateval,boolval,byteval,charval,decimalval,doubleval,floatval,guidval,
-""wibb,le"",2,2015-01-31,true,1,x,-10.4321,1.456E5,-4E2,""{11A59F73-6905-4299-8E54-5E749B2ACD68}""
+""wibb,le"",2,2015-01-31,true,1,x,-10.4321,1.456E5,-4E2,""{11A59F73-6905-4299-8E54-5E749B2ACD68}"",
 ,,,,,,,,,,
 ";
 

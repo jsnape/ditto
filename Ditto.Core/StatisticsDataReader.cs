@@ -58,7 +58,7 @@ namespace Ditto.Core
         }
 
         /// <summary>
-        /// Advances the <see cref="T:System.Data.IDataReader" /> to the next record.
+        /// Advances the <see cref="System.Data.IDataReader" /> to the next record.
         /// </summary>
         /// <returns>
         /// True if there are more rows; otherwise, false.

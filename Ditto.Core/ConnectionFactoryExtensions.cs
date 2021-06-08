@@ -1,4 +1,4 @@
-﻿#region Copyright (c) all rights reserved.
+#region Copyright (c) all rights reserved.
 // <copyright file="ConnectionFactoryExtensions.cs">
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -75,11 +75,13 @@ namespace Ditto.Core
                         schema = reader.GetSchemaTable();
                     }
                 }
+#pragma warning disable CC0004 // Catch block cannot be empty
                 catch (DbException)
                 {
                     // SQL Server might throw an 'invalid object' exception if a temp table is used.
                     // Sysbase seems to just return a null schema table.
                 }
+#pragma warning restore CC0004 // Catch block cannot be empty
             }
 
             if (schema == null)

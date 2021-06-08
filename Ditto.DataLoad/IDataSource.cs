@@ -49,10 +49,10 @@ namespace Ditto.DataLoad
         IEnumerable<string> GetColumns(Watermark previousHighWatermark);
 
         /// <summary>
-        /// Returns a <see cref="T:System.Data.DataTable" /> that describes the column metadata of the <see cref="T:System.Data.IDataReader" />.
+        /// Returns a <see cref="System.Data.DataTable" /> that describes the column metadata of the <see cref="System.Data.IDataReader" />.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Data.DataTable" /> that describes the column metadata.
+        /// A <see cref="System.Data.DataTable" /> that describes the column metadata.
         /// </returns>
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Following the IDataReader pattern")]
         DataTable GetSchemaTable();

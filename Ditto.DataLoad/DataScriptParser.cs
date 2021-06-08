@@ -225,7 +225,7 @@ namespace Ditto.DataLoad
             csvConfig.Comment = ParseAttribute(FindElementText(config, "Comment"), csvConfig.Comment);
             csvConfig.Delimiter = ParseAttribute(FindElementText(config, "Delimiter"), csvConfig.Delimiter);
             csvConfig.DetectColumnCountChanges = ParseAttribute(FindElementText(config, "DetectColumnCountChanges"), csvConfig.DetectColumnCountChanges);
-            //csvConfig.HasExcelSeparator = ParseAttribute(FindElementText(config, "HasExcelSeparator"), csvConfig.HasExcelSeparator);
+            ////csvConfig.HasExcelSeparator = ParseAttribute(FindElementText(config, "HasExcelSeparator"), csvConfig.HasExcelSeparator);
             csvConfig.HasHeaderRecord = ParseAttribute(FindElementText(config, "HasHeaderRecord"), csvConfig.HasHeaderRecord);
             csvConfig.IgnoreBlankLines = ParseAttribute(FindElementText(config, "IgnoreBlankLines"), csvConfig.IgnoreBlankLines);
             csvConfig.IgnoreQuotes = ParseAttribute(FindElementText(config, "IgnoreQuotes"), csvConfig.IgnoreQuotes);

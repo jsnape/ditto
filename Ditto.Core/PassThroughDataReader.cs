@@ -1,4 +1,4 @@
-﻿#region Copyright (c) all rights reserved.
+#region Copyright (c) all rights reserved.
 // <copyright file="PassThroughDataReader.cs">
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -30,12 +30,7 @@ namespace Ditto.Core
         /// <param name="reader">The reader.</param>
         protected PassThroughDataReader(IDataReader reader)
         {
-            if (reader == null)
-            {
-                throw new ArgumentNullException("reader");
-            }
-
-            this.Reader = reader;
+            this.Reader = reader ?? throw new ArgumentNullException("reader");
         }
 
         /// <summary>
@@ -99,18 +94,15 @@ namespace Ditto.Core
         }
 
         /// <summary>
-        /// Closes the <see cref="T:System.Data.IDataReader" /> Object.
+        /// Closes the <see cref="System.Data.IDataReader" /> Object.
         /// </summary>
-        public virtual void Close()
-        {
-            this.Dispose();
-        }
+        public virtual void Close() => this.Dispose();
 
         /// <summary>
-        /// Returns a <see cref="T:System.Data.DataTable" /> that describes the column metadata of the <see cref="T:System.Data.IDataReader" />.
+        /// Returns a <see cref="System.Data.DataTable" /> that describes the column metadata of the <see cref="System.Data.IDataReader" />.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Data.DataTable" /> that describes the column metadata.
+        /// A <see cref="System.Data.DataTable" /> that describes the column metadata.
         /// </returns>
         public virtual DataTable GetSchemaTable()
         {
@@ -129,7 +121,7 @@ namespace Ditto.Core
         }
 
         /// <summary>
-        /// Advances the <see cref="T:System.Data.IDataReader" /> to the next record.
+        /// Advances the <see cref="System.Data.IDataReader" /> to the next record.
         /// </summary>
         /// <returns>
         /// True if there are more rows; otherwise, false.
@@ -208,11 +200,11 @@ namespace Ditto.Core
         }
 
         /// <summary>
-        /// Returns an <see cref="T:System.Data.IDataReader" /> for the specified column ordinal.
+        /// Returns an <see cref="System.Data.IDataReader" /> for the specified column ordinal.
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Data.IDataReader" /> for the specified column ordinal.
+        /// The <see cref="System.Data.IDataReader" /> for the specified column ordinal.
         /// </returns>
         public virtual IDataReader GetData(int i)
         {
@@ -268,11 +260,13 @@ namespace Ditto.Core
         }
 
         /// <summary>
-        /// Gets the <see cref="T:System.Type" /> information corresponding to the type of <see cref="T:System.Object" /> that would be returned from <see cref="M:System.Data.IDataRecord.GetValue(System.Int32)" />.
+        /// Gets the <see cref="Type" /> information corresponding to the type of <see cref="object" />
+        /// that would be returned from <see cref="System.Data.IDataRecord.GetValue(Int32)" />.
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Type" /> information corresponding to the type of <see cref="T:System.Object" /> that would be returned from <see cref="M:System.Data.IDataRecord.GetValue(System.Int32)" />.
+        /// The <see cref="Type" /> information corresponding to the type of <see cref="object" />
+        /// that would be returned from <see cref="System.Data.IDataRecord.GetValue(Int32)" />.
         /// </returns>
         public virtual Type GetFieldType(int i)
         {
@@ -380,7 +374,7 @@ namespace Ditto.Core
         /// </summary>
         /// <param name="i">The index of the field to find.</param>
         /// <returns>
-        /// The <see cref="T:System.Object" /> which will contain the field value upon return.
+        /// The <see cref="System.Object" /> which will contain the field value upon return.
         /// </returns>
         public virtual object GetValue(int i)
         {
@@ -390,9 +384,9 @@ namespace Ditto.Core
         /// <summary>
         /// Populates an array of objects with the column values of the current record.
         /// </summary>
-        /// <param name="values">An array of <see cref="T:System.Object" /> to copy the attribute fields into.</param>
+        /// <param name="values">An array of <see cref="System.Object" /> to copy the attribute fields into.</param>
         /// <returns>
-        /// The number of instances of <see cref="T:System.Object" /> in the array.
+        /// The number of instances of <see cref="System.Object" /> in the array.
         /// </returns>
         public virtual int GetValues(object[] values)
         {

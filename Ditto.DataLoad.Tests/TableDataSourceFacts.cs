@@ -1,4 +1,4 @@
-﻿#region Copyright (c) all rights reserved.
+#region Copyright (c) all rights reserved.
 // <copyright file="TableDataSourceFacts.cs">
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -10,11 +10,10 @@ namespace Ditto.DataLoad.Tests
 {
     using System;
     using System.Data;
-    using System.Data.Common;
     using System.Linq;
-    using Ditto.DomainEvents;
     using Ditto.Core.Tests;
     using Ditto.DataLoad.DomainEvents;
+    using Ditto.DomainEvents;
     using NSubstitute;
     using Xunit;
 
@@ -42,8 +41,10 @@ namespace Ditto.DataLoad.Tests
             this.operation = Substitute.For<IDataOperationInfo>();
             this.operation.OperationId.ReturnsForAnyArgs(Guid.NewGuid());
 
-            this.target = new TableDataSource(this.ConnectionFactory, "dbo.wibble");
-            this.target.Parent = this.operation;
+            this.target = new TableDataSource(this.ConnectionFactory, "dbo.wibble")
+            {
+                Parent = this.operation
+            };
         }
 
         /// <summary>

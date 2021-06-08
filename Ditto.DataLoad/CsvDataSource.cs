@@ -171,10 +171,10 @@ namespace Ditto.DataLoad
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.Data.DataTable" /> that describes the column metadata of the <see cref="T:System.Data.IDataReader" />.
+        /// Returns a <see cref="System.Data.DataTable" /> that describes the column metadata of the <see cref="System.Data.IDataReader" />.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Data.DataTable" /> that describes the column metadata.
+        /// A <see cref="System.Data.DataTable" /> that describes the column metadata.
         /// </returns>
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "JS: This follows the correct transfer of ownership pattern")]
         public DataTable GetSchemaTable()

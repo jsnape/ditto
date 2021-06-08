@@ -13,8 +13,8 @@ namespace Ditto.DataLoad.Tests
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using Csv = CsvHelper.Configuration;
     using Xunit;
+    using Csv = CsvHelper.Configuration;
 
     /// <summary>
     /// MultipleCsvDataReader Facts.
@@ -38,7 +38,7 @@ namespace Ditto.DataLoad.Tests
         /// <summary>
         /// The test shadow.
         /// </summary>
-        private IDataReader shadow;
+        private readonly IDataReader shadow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultipleCsvDataReaderFacts"/> class.

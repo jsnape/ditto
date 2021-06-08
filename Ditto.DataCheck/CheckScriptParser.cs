@@ -1,4 +1,4 @@
-﻿#region Copyright (c) all rights reserved.
+#region Copyright (c) all rights reserved.
 // <copyright file="CheckScriptParser.cs">
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -237,6 +237,7 @@ namespace Ditto.DataCheck
                 }
             }
         }
+
         /// <summary>
         /// Loads the checks.
         /// </summary>
