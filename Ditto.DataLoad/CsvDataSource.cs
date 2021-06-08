@@ -18,6 +18,7 @@ namespace Ditto.DataLoad
     using Ditto.Core;
     using Ditto.DataLoad.DomainEvents;
     using Csv = CsvHelper.Configuration;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// FolderMode enumeration.
@@ -69,12 +70,12 @@ namespace Ditto.DataLoad
         /// <summary>
         /// Folder handling mode.
         /// </summary>
-        private FolderMode mode;
+        private readonly FolderMode mode;
 
         /// <summary>
         /// The CSV configuration.
         /// </summary>
-        private Csv.Configuration config;
+        private readonly Csv.Configuration config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvDataSource" /> class.
@@ -175,13 +176,15 @@ namespace Ditto.DataLoad
         /// <returns>
         /// A <see cref="T:System.Data.DataTable" /> that describes the column metadata.
         /// </returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "JS: This follows the correct transfer of ownership pattern")]
         public DataTable GetSchemaTable()
         {
-            DataTable table = null;
+            DataTable tempTable = null;
+            DataTable schemaTable = null;
 
             try
             {
-                table = new DataTable
+                tempTable = new DataTable
                 {
                     Locale = CultureInfo.CurrentCulture
                 };
@@ -195,7 +198,7 @@ namespace Ditto.DataLoad
                     new DataColumn("AllowDBNull", typeof(bool)),
                 };
 
-                table.Columns.AddRange(columns);
+                tempTable.Columns.AddRange(columns);
 
                 var columnNames = this.GetColumns(null).ToArray();
 
@@ -204,29 +207,30 @@ namespace Ditto.DataLoad
                 if (columnNames.Count() != 0)
                 {
                     // Fixed columns get real metadata (until I've implemented the schema functionality)
-                    table.Rows.Add(0, "_LineNumber", 0, typeof(int), false);
-                    table.Rows.Add(0, "_SourceFile", 260, typeof(string), false);
+                    tempTable.Rows.Add(0, "_LineNumber", 0, typeof(int), false);
+                    tempTable.Rows.Add(0, "_SourceFile", 260, typeof(string), false);
 
                     // In particular this one or the high watermarking won't work.
-                    table.Rows.Add(0, "_LastWriteTimeUtc", 0, typeof(DateTime), false);
+                    tempTable.Rows.Add(0, "_LastWriteTimeUtc", 0, typeof(DateTime), false);
 
-                    for (int i = table.Rows.Count; i < columnNames.Length; ++i)
+                    for (int i = tempTable.Rows.Count; i < columnNames.Length; ++i)
                     {
-                        table.Rows.Add(i, columnNames[i], 255, typeof(string), true);
+                        tempTable.Rows.Add(i, columnNames[i], 255, typeof(string), true);
                     }
                 }
 
-                var schemaTable = table;
-                table = null;
-                return schemaTable;
+                schemaTable = tempTable;
+                tempTable = null;
             }
             finally
             {
-                if (table != null)
+                if (tempTable != null)
                 {
-                    table.Dispose();
+                    tempTable.Dispose();
                 }
             }
+
+            return schemaTable;
         }
 
         /// <summary>

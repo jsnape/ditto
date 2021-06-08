@@ -250,7 +250,7 @@ namespace Ditto.DataLoad
 
             if (!ParseAttribute(FindElementText(config, "IsHeaderCaseSensitive"), false))
             {
-                csvConfig.PrepareHeaderForMatch = header => csvConfig.PrepareHeaderForMatch(header)?.ToLowerInvariant();
+                csvConfig.PrepareHeaderForMatch = header => csvConfig.PrepareHeaderForMatch(header)?.ToUpperInvariant();
             }
 
             csvConfig.TrimOptions = ParseAttribute(FindElementText(config, "TrimFields"), true) ? Csv.TrimOptions.Trim : Csv.TrimOptions.None;

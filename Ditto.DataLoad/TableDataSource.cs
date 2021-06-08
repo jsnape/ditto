@@ -1,4 +1,4 @@
-﻿#region Copyright (c) all rights reserved.
+#region Copyright (c) all rights reserved.
 // <copyright file="TableDataSource.cs">
 // THIS CODE AND INFORMATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
 // EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -10,6 +10,7 @@ namespace Ditto.DataLoad
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using Ditto.Core;
@@ -32,12 +33,7 @@ namespace Ditto.DataLoad
         public TableDataSource(IConnectionFactory connectionFactory, string tableName)
             : base(connectionFactory)
         {
-            if (tableName == null)
-            {
-                throw new ArgumentNullException("tableName");
-            }
-
-            this.tableName = tableName;
+            this.tableName = tableName ?? throw new ArgumentNullException("tableName");
         }
 
         /// <summary>
@@ -78,11 +74,11 @@ namespace Ditto.DataLoad
                 .Append("select ")
                 .Append(columns.Aggregate(string.Empty, (a, v) => a + (a.Length == 0 ? v : ", " + v)))
                 .Append(columns.Count() == 0 ? "*" : string.Empty)
-                .AppendFormat(" from {0}", this.tableName);
+                .AppendFormat(CultureInfo.InvariantCulture, " from {0}", this.tableName);
 
             if (previousHighWatermark != null)
             {
-                query.AppendFormat(" where {0} > @highWatermark", previousHighWatermark.WatermarkColumn);
+                query.AppendFormat(CultureInfo.InvariantCulture, " where {0} > @highWatermark", previousHighWatermark.WatermarkColumn);
             }
 
             return query.ToString();
