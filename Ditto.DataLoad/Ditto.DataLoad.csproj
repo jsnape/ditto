@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{965819F8-A45F-42CA-A00D-56CEEE2E77C6}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -45,7 +45,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="21.6.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="21.9.0" />
     <PackageReference Include="SecurityCodeScan.VS2017" Version="3.5.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
