@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{2AB0F743-6BC6-43F8-8B2F-1B974780CA9E}</ProjectGuid>
     <TargetFramework>net47</TargetFramework>
@@ -27,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.2" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="NSubstitute" Version="5.0.0" />
