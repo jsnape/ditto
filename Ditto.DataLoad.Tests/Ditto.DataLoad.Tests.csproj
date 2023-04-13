@@ -26,7 +26,7 @@
   </Target>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="5.0.0" />
-    <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="EnterpriseLibrary.SemanticLogging" Version="2.0.1406.1" />
     <PackageReference Include="EnterpriseLibrary.SemanticLogging.EventSourceAnalyzer" Version="2.0.1406.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
